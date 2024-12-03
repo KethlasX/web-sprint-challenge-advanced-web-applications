@@ -7,19 +7,34 @@ const initialFormValues = {
 }
 export default function LoginForm(props) {
   const [values, setValues] = useState(initialFormValues)
+  const [isValid, setIsValid] = useState(true)
   // ✨ where are my props? Destructure them here
 
   const onChange = evt => {
     const { id, value } = evt.target
     setValues({ ...values, [id]: value })
+    const checkValues = {
+      username: values.username.trim(),
+      password: values.password.trim()
+    }
+    
+    if (checkValues.username.length < 3 || checkValues.password.length < 8) setIsValid(true)
+      else setIsValid(false)
   }
 
   const onSubmit = evt => {
     evt.preventDefault()
+    
+    props.login(values)
     // ✨ implement
   }
 
+// line 73-94 on web-s7-challenge
+// the idea is to create a slice of state for validation and put it in the onSubmit AND the isDisabled so we can check the value updates from state through the onSubmit before deciding to !isDisabled
+
   const isDisabled = () => {
+   
+    
     // ✨ implement
     // Trimmed username must be >= 3, and
     // trimmed password must be >= 8 for
@@ -43,7 +58,7 @@ export default function LoginForm(props) {
         placeholder="Enter password"
         id="password"
       />
-      <button disabled={isDisabled()} id="submitCredentials">Submit credentials</button>
+      <button disabled={isValid} id="submitCredentials">Submit credentials</button>
     </form>
   )
 }

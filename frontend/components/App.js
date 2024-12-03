@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import axios from 'axios'
 import { NavLink, Routes, Route, useNavigate } from 'react-router-dom'
 import Articles from './Articles'
 import LoginForm from './LoginForm'
@@ -18,10 +19,15 @@ export default function App() {
 
   // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate()
-  const redirectToLogin = () => { /* ✨ implement */ }
-  const redirectToArticles = () => { /* ✨ implement */ }
+  const redirectToLogin = () => navigate('/')
+  const redirectToArticles = () => navigate('/articles')
 
   const logout = () => {
+    if (localStorage.getItem('token')) {
+      localStorage.removeItem('token')
+      setMessage("Goodbye!")
+    }
+    redirectToLogin()
     // ✨ implement
     // If a token is in local storage it should be removed,
     // and a message saying "Goodbye!" should be set in its proper state.
@@ -30,12 +36,22 @@ export default function App() {
   }
 
   const login = ({ username, password }) => {
+    setMessage('')
+    setSpinnerOn(true)
+    axios.post(loginUrl, {username, password})
+      .then(res => {
+        localStorage.setItem('token', res.token)
+        setMessage(`"Here are your articles, ${username}"`)
+        redirectToArticles()
+      })
+      .finally(setSpinnerOn(false))
+
     // ✨ implement
-    // We should flush the message state, turn on the spinner
-    // and launch a request to the proper endpoint.
-    // On success, we should set the token to local storage in a 'token' key,
-    // put the server success message in its proper state, and redirect
-    // to the Articles screen. Don't forget to turn off the spinner!
+    // We should flush the message state, turn on the spinner    **
+    // and launch a request to the proper endpoint.    **
+    // On success, we should set the token to local storage in a 'token' key,    **
+    // put the server success message in its proper state, and redirect    **
+    // to the Articles screen. Don't forget to turn off the spinner!      **
   }
 
   const getArticles = () => {
@@ -74,11 +90,11 @@ export default function App() {
       <div id="wrapper" style={{ opacity: spinnerOn ? "0.25" : "1" }}> {/* <-- do not change this line */}
         <h1>Advanced Web Applications</h1>
         <nav>
-          <NavLink id="loginScreen" to="/">Login</NavLink>
+          <NavLink id="loginScreen" to="/">{login}</NavLink>
           <NavLink id="articlesScreen" to="/articles">Articles</NavLink>
         </nav>
         <Routes>
-          <Route path="/" element={<LoginForm />} />
+          <Route path="/" element={<LoginForm login={login}/>} />
           <Route path="articles" element={
             <>
               <ArticleForm />
