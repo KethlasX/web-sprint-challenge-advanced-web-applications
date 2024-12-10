@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PT from 'prop-types'
 
 const initialFormValues = {
@@ -13,13 +13,7 @@ export default function LoginForm(props) {
   const onChange = evt => {
     const { id, value } = evt.target
     setValues({ ...values, [id]: value })
-    const checkValues = {
-      username: values.username.trim(),
-      password: values.password.trim()
-    }
-    
-    if (checkValues.username.length < 3 || checkValues.password.length < 8) setIsValid(true)
-      else setIsValid(false)
+      
   }
 
   const onSubmit = evt => {
@@ -29,12 +23,20 @@ export default function LoginForm(props) {
     // ✨ implement
   }
 
+  useEffect(() => {
+    isDisabled()
+  }, [values])
 // line 73-94 on web-s7-challenge
 // the idea is to create a slice of state for validation and put it in the onSubmit AND the isDisabled so we can check the value updates from state through the onSubmit before deciding to !isDisabled
 
   const isDisabled = () => {
-   
+   const checkValues = {
+      username: values.username.trim(),
+      password: values.password.trim()
+    }
     
+    if (checkValues.username.length >= 3 && checkValues.password.length >= 8) setIsValid(false)
+    else setIsValid(true)
     // ✨ implement
     // Trimmed username must be >= 3, and
     // trimmed password must be >= 8 for
